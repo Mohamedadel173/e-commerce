@@ -13,61 +13,91 @@ import type { ExtendRequest } from "../types/extendedRequest.js";
 const router = express.Router();
 
 router.get("/", validateJWT, async (req: ExtendRequest, res) => {
-  const userId = req.user._id;
-  const { statusCode, data } = await getActiveCartForUser({ userId });
-  res.status(statusCode).send(data);
+  try {
+    const userId = req.user._id;
+    const { statusCode, data } = await getActiveCartForUser({ userId });
+    res.status(statusCode).send(data);
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.post("/items", validateJWT, async (req: ExtendRequest, res) => {
-  const userId = req.user._id;
-  const { productId, quantity } = req.body;
-  // Call service to add item to cart
-  const { statusCode, data } = await addItemToCart({
-    userId,
-    productId,
-    quantity,
-  });
-  res.status(statusCode).send(data);
+  try {
+    const userId = req.user._id;
+    const { productId, quantity } = req.body;
+    // Call service to add item to cart
+    const { statusCode, data } = await addItemToCart({
+      userId,
+      productId,
+      quantity,
+    });
+    res.status(statusCode).send(data);
+  } catch (error) {
+    console.error("Error adding item to cart:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.put("/items", validateJWT, async (req: ExtendRequest, res) => {
-  const userId = req.user._id;
-  const { productId, quantity } = req.body;
-  // Call service to update item quantity in cart
-  const { statusCode, data } = await updateCartItem({
-    userId,
-    productId,
-    quantity,
-  });
-  res.status(statusCode).send(data);
+  try {
+    const userId = req.user._id;
+    const { productId, quantity } = req.body;
+    // Call service to update item quantity in cart
+    const { statusCode, data } = await updateCartItem({
+      userId,
+      productId,
+      quantity,
+    });
+    res.status(statusCode).send(data);
+  } catch (error) {
+    console.error("Error updating cart item:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.delete(
   "/items/:productId",
   validateJWT,
   async (req: ExtendRequest, res) => {
-    const userId = req.user._id;
-    const { productId } = req.params;
-    const { statusCode, data } = await removeCartItem({
-      userId,
-      productId,
-    });
-    res.status(statusCode).send(data);
+    try {
+      const userId = req.user._id;
+      const { productId } = req.params;
+      const { statusCode, data } = await removeCartItem({
+        userId,
+        productId,
+      });
+      res.status(statusCode).send(data);
+    } catch (error) {
+      console.error("Error removing cart item:", error);
+      res.status(500).send("Internal Server Error");
+    }
   },
 );
 
 router.delete("/", validateJWT, async (req: ExtendRequest, res) => {
-  const userId = req.user._id;
-  const { statusCode, data } = await clearCart({
-    userId,
-  });
-  res.status(statusCode).send(data);
+  try {
+    const userId = req.user._id;
+    const { statusCode, data } = await clearCart({
+      userId,
+    });
+    res.status(statusCode).send(data);
+  } catch (error) {
+    console.error("Error clearing cart:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 router.post("/checkout", validateJWT, async (req: ExtendRequest, res) => {
-  const userId = req.user._id;
-  const { address } = req.body; //? Assuming the address is temporarily sent in the request body for simplification
-  const { statusCode, data } = await checkout({ userId, address });
-  res.status(statusCode).send(data);
+  try {
+    const userId = req.user._id;
+    const { address } = req.body; //? Assuming the address is temporarily sent in the request body for simplification
+    const { statusCode, data } = await checkout({ userId, address });
+    res.status(statusCode).send(data);
+  } catch (error) {
+    console.error("Error during checkout:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 export default router;
