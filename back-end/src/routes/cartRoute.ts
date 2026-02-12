@@ -5,6 +5,7 @@ import {
   updateCartItem,
   removeCartItem,
   clearCart,
+  checkout,
 } from "../services/cartService.js";
 import { validateJWT } from "../middlewares/validateJWT.js";
 import type { ExtendRequest } from "../types/extendedRequest.js";
@@ -63,4 +64,10 @@ router.delete("/", validateJWT, async (req: ExtendRequest, res) => {
   res.status(statusCode).send(data);
 });
 
+router.post("/checkout", validateJWT, async (req: ExtendRequest, res) => {
+  const userId = req.user._id;
+  const { address } = req.body; //? Assuming the address is temporarily sent in the request body for simplification
+  const { statusCode, data } = await checkout({ userId, address });
+  res.status(statusCode).send(data);
+});
 export default router;
