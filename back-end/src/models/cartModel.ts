@@ -2,7 +2,7 @@ import { Schema, Document, model, type ObjectId } from "mongoose";
 import type { IProduct } from "./productModel.js";
 
 export interface ICartItem {
-  productId: IProduct; //!!
+  productId: ObjectId; //!!
   unitPrice: number;
   quantity: number;
 }
