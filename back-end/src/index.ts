@@ -14,6 +14,10 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+// CORS middleware
+import cors from "cors";
+app.use(cors());
+
 // Seed initial products
 import { seedInitialProducts } from "./services/productService.js";
 seedInitialProducts();
