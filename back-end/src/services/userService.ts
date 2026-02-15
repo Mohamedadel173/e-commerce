@@ -2,13 +2,13 @@ import { userModel } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-// Register function
 interface RegisterParams {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
 }
+//* register function
 export const register = async ({
   firstName,
   lastName,
@@ -33,12 +33,13 @@ export const register = async ({
     statusCode: 201,
   };
 };
+//* end register function *//
 
-// Login function
 interface LoginParams {
   email: string;
   password: string;
 }
+//* login function
 // export const login = (params: LoginParams) => {
 export const login = async ({ email, password }: LoginParams) => {
   const findUser = await userModel.findOne({ email });
@@ -58,6 +59,7 @@ export const login = async ({ email, password }: LoginParams) => {
     statusCode: 200,
   };
 };
+//* end login function *//
 
 const generateToken = (data: any) => {
   return jwt.sign(

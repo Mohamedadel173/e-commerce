@@ -4,13 +4,11 @@ import { BASE_URL } from "../constants/baseUrl";
 import { useAuthContext } from "../context/auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   // bulitIn hooks
   // state hooks
   const [err, setErr] = useState("");
   // ref hooks
-  const firstNameRef = useRef<HTMLInputElement>(null);
-  const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   // navigate hook
@@ -21,26 +19,22 @@ export default function RegisterPage() {
 
   //* handleSubmit function
   const handleSubmit = async () => {
-    const firstNameValue = firstNameRef.current?.value;
-    const lastNameValue = lastNameRef.current?.value;
     const emailValue = emailRef.current?.value;
     const passwordValue = passwordRef.current?.value;
 
     // Validate that all fields are filled
-    if (!firstNameValue || !lastNameValue || !emailValue || !passwordValue) {
+    if (!emailValue || !passwordValue) {
       setErr("Please fill in all fields");
       return;
     }
 
     // Make the call to API to create the user
-    const response = await fetch(`${BASE_URL}/user/register`, {
+    const response = await fetch(`${BASE_URL}/user/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstName: firstNameValue,
-        lastName: lastNameValue,
         email: emailValue,
         password: passwordValue,
       }),
@@ -76,7 +70,7 @@ export default function RegisterPage() {
           alignItems: "center",
         }}
       >
-        <Typography variant="h6">Register New Account</Typography>
+        <Typography variant="h6">Login to Account</Typography>
         <Box
           component="form"
           sx={{
@@ -93,18 +87,6 @@ export default function RegisterPage() {
           autoComplete="off"
         >
           <TextField
-            inputRef={firstNameRef}
-            id="firstName"
-            label="FirstName"
-            variant="outlined"
-          />
-          <TextField
-            inputRef={lastNameRef}
-            id="lastName"
-            label="LastName"
-            variant="outlined"
-          />
-          <TextField
             inputRef={emailRef}
             id="email"
             label="Email"
@@ -118,7 +100,7 @@ export default function RegisterPage() {
             variant="outlined"
           />
           <Button onClick={handleSubmit} variant="contained">
-            Register
+            Login
           </Button>
           {err && (
             <Typography sx={{ textAlign: "center" }} color="error">
