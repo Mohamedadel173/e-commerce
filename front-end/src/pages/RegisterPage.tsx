@@ -55,7 +55,7 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!data) {
+    if (!data) { //!!!
       setErr("Incorrect Token");
       return;
     }

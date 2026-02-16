@@ -7,6 +7,7 @@ import { BASE_URL } from "../constants/baseUrl";
 const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState(false);
+  
   useEffect(() => {
     // Fetch products from the backend API
     // fetch(`${BASE_URL}/products`).then(async (response) => {
@@ -19,7 +20,6 @@ const HomePage = () => {
         const response = await fetch(`${BASE_URL}/products`);
         const data = await response.json();
         setProducts(data);
-        fetchProducts();
       } catch (err) {
         console.error("Failed to fetch:", err);
         setError(true);

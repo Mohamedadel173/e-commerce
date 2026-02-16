@@ -13,13 +13,28 @@ import {
   Tooltip,
   MenuItem,
   Grid,
+  Badge,
+  styled,
+  type BadgeProps,
 } from "@mui/material";
 import AdbIcon from "@mui/icons-material/Adb";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useAuthContext } from "../context/auth/AuthContext";
 
+const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    right: -3,
+    top: 13,
+    border: `2px solid ${(theme.vars ?? theme).palette.background.paper}`,
+    padding: "0 4px",
+  },
+}));
+
 function NavBar() {
-  const { username, isAuthenticated, logout } = useAuthContext();
+  // navigate hook
   const navigate = useNavigate();
+
+  const { username, isAuthenticated, logout } = useAuthContext();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
@@ -106,14 +121,22 @@ function NavBar() {
               </Typography>
             </Box>
 
-            <Box sx={{ flexGrow: 0 }}>
+            <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
+              <IconButton
+                sx={{ mr: 2 }}
+                aria-label="cart"
+                onClick={() => navigate("/cart")}
+              >
+                <StyledBadge badgeContent={4} color="primary">
+                  <ShoppingCartIcon
+                    sx={{ color: "white", width: 30, height: 30 }}
+                  />
+                </StyledBadge>
+              </IconButton>
               {isAuthenticated ? (
                 <>
                   <Tooltip title="Open settings">
                     <Grid container alignItems="center" spacing={1}>
-                      <Grid>
-                        <Typography>{username}</Typography>
-                      </Grid>
                       <Grid>
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                           <Avatar
@@ -121,6 +144,17 @@ function NavBar() {
                             src="/static/images/avatar/2.jpg"
                           />
                         </IconButton>
+                      </Grid>
+                      <Grid>
+                        <Typography
+                          sx={{
+                            width: 100,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {username}
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Tooltip>
