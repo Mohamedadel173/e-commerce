@@ -20,6 +20,7 @@ import {
 import AdbIcon from "@mui/icons-material/Adb";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useAuthContext } from "../context/auth/AuthContext";
+import { useCartContext } from "../context/cart/CartContext";
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -35,6 +36,7 @@ function NavBar() {
   const navigate = useNavigate();
 
   const { username, isAuthenticated, logout } = useAuthContext();
+  const { cartItems } = useCartContext();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
@@ -72,7 +74,10 @@ function NavBar() {
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
+                cursor: "pointer",
               }}
+              onClick={() => navigate("/")}
+              
             >
               <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
               <Typography
@@ -99,6 +104,7 @@ function NavBar() {
                 flexDirection: "row",
                 alignItems: "center",
               }}
+              onClick={() => navigate("/")}
             >
               <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
               <Typography
@@ -127,7 +133,7 @@ function NavBar() {
                 aria-label="cart"
                 onClick={() => navigate("/cart")}
               >
-                <StyledBadge badgeContent={4} color="primary">
+                <StyledBadge badgeContent={cartItems.length} color="primary">
                   <ShoppingCartIcon
                     sx={{ color: "white", width: 30, height: 30 }}
                   />

@@ -1,44 +1,31 @@
-import { useEffect, useState } from "react";
 import { Container, Typography } from "@mui/material";
-import { useAuthContext } from "../context/auth/AuthContext";
-import { BASE_URL } from "../constants/baseUrl";
+import { useCartContext } from "../context/cart/CartContext";
+import type { CartItem } from "../types/CartItem";
 
 export default function CartPage() {
-  const { token } = useAuthContext();
-  const [cartItems, setCartItems] = useState([]);
-  const [err, setErr] = useState("");
+  const { cartItems } = useCartContext();
 
-  useEffect(() => {
-    if (!token) {
-        
-      return;
-    }
+  if (!cartItems) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Typography>Loading your cart...</Typography>
+      </Container>
+    );
+  }
 
-    const fetchCartItems = async () => {
-      const res = await fetch(`${BASE_URL}/cart`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-      
-      if (!res.ok) {
-        setErr(data || "Failed to fetch cart items");
-        return;
-      }
-      setCartItems(data);
-    };
-
-    fetchCartItems();
-  }, [token]);
-
-  console.log("Cart Items:", cartItems); //? for debugging purposes
-  console.log("Error:", err); //? for debugging purposes
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h6">My Cart</Typography>
+      {/* Display cart items */}
+      {cartItems.length === 0 ? (
+        <Typography>Your cart is empty.</Typography>
+      ) : (
+        cartItems.map((item: CartItem) => (
+          <div key={item.productId}>
+            <Typography>{item.title}</Typography>
+          </div>
+        ))
+      )}
     </Container>
   );
 }

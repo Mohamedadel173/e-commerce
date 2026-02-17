@@ -1,3 +1,11 @@
+// Functions:
+// - get active cart for a user
+// - clear cart
+// - ccccccccc
+// - update item quantity in cart
+// - remove item from cart
+// - checkout cart
+
 import type { ObjectId } from "mongoose";
 import cartModel, { type ICartItem } from "../models/cartModel.js";
 import productModel from "../models/productModel.js";
@@ -13,24 +21,33 @@ const createCartForUser = async ({ userId }: CartForUserParams) => {
   return cart;
 };
 
-// get active cart for a user
 interface GetActiveCartForUserParams {
   userId: ObjectId;
+  populateProducts?: boolean;
 }
+//* get active cart for a user
 export const getActiveCartForUser = async ({
   userId,
+  populateProducts,
 }: GetActiveCartForUserParams) => {
-  let cart = await cartModel.findOne({ userId, status: "active" });
+  let cart;
+  populateProducts
+    ? (cart = await cartModel
+        .findOne({ userId, status: "active" })
+        .populate("items.productId"))
+    : (cart = await cartModel.findOne({ userId, status: "active" }));
+
   if (!cart) {
     cart = await createCartForUser({ userId });
   }
   return { data: cart, statusCode: 200 };
 };
+// end get active cart for a user */
 
-// clear cart
 interface ClearCartParams {
   userId: ObjectId;
 }
+//* clear cart
 export const clearCart = async ({ userId }: ClearCartParams) => {
   const { data: cart } = await getActiveCartForUser({ userId });
   cart.items = [];
@@ -38,13 +55,14 @@ export const clearCart = async ({ userId }: ClearCartParams) => {
   const updatedCart = await cart.save();
   return { data: updatedCart, statusCode: 200 };
 };
+// end clear cart */
 
-// add item to cart
 interface AddItemToCartParams {
   userId: ObjectId;
   productId: any;
   quantity: number;
 }
+//* add item to cart
 export const addItemToCart = async ({
   userId,
   productId,
@@ -72,7 +90,6 @@ export const addItemToCart = async ({
     return { data: { message: "Insufficient stock" }, statusCode: 400 };
   }
 
-  // Add item to cart
   cart.items.push({
     productId: product._id as unknown as ObjectId, //!!!
     unitPrice: product.price,
@@ -83,17 +100,21 @@ export const addItemToCart = async ({
   cart.totalAmount += product.price * quantity;
 
   // Save cart
-  const updatedCart = await cart.save();
-
-  return { data: updatedCart, statusCode: 200 };
+  await cart.save();
+  const updatedCart = await getActiveCartForUser({ userId, populateProducts: true });
+  return {
+    data: updatedCart.data,
+    statusCode: 200,
+  };
 };
+// end add item to cart */
 
-// update item quantity in cart
 interface UpdateCartItemParams {
   userId: ObjectId;
   productId: any;
   quantity: number;
 }
+//* update item quantity in cart
 export const updateCartItem = async ({
   userId,
   productId,
@@ -123,23 +144,27 @@ export const updateCartItem = async ({
     (item) => item.productId.toString() !== productId,
   );
   let total = totalAmountForOtherItems({ cartItems: otherCartItems });
-  // Update item quantity in cart
+
   existsInCart.quantity = quantity;
 
   total += existsInCart.unitPrice * quantity;
   cart.totalAmount = total;
 
   // Save cart
-  const updatedCart = await cart.save();
+  await cart.save();
 
-  return { data: updatedCart, statusCode: 200 };
+  return {
+    data: await getActiveCartForUser({ userId, populateProducts: true }),
+    statusCode: 200,
+  };
 };
+// end update item quantity in cart */
 
-// remove item from cart
 interface RemoveCartItemParams {
   userId: ObjectId;
   productId: any;
 }
+//* remove item from cart
 export const removeCartItem = async ({
   userId,
   productId,
@@ -161,16 +186,20 @@ export const removeCartItem = async ({
   cart.totalAmount = totalAmountForOtherItems({ cartItems: otherCartItems });
 
   // Save cart
-  const updatedCart = await cart.save();
+  await cart.save();
 
-  return { data: updatedCart, statusCode: 200 };
+  return {
+    data: await getActiveCartForUser({ userId, populateProducts: true }),
+    statusCode: 200,
+  };
 };
+// end remove item from cart */
 
-// checkout cart
 interface CheckoutParams {
   userId: ObjectId;
   address: string;
 }
+//* checkout cart
 export const checkout = async ({ userId, address }: CheckoutParams) => {
   const { data: cart } = await getActiveCartForUser({ userId });
 
@@ -218,8 +247,9 @@ export const checkout = async ({ userId, address }: CheckoutParams) => {
 
   return { data: order, statusCode: 200 };
 };
+// end checkout cart */
 
-//* Additional cart-related service functions
+//** Additional cart-related service functions
 // Helper function to calculate total amount for cart items
 const totalAmountForOtherItems = ({
   cartItems,
