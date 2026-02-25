@@ -50,4 +50,4 @@ app.use(async (req, res, next) => {
   next();
 });
 
-module.exports = app;
+export default app;
